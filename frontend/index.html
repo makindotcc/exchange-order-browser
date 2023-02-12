@@ -1,0 +1,27 @@
+<html>
+
+<head>
+    <meta charset="UTF-8">
+    <script src="libchart/highstock.js"></script>
+    <script src="libchart/boost.js"></script>
+    <script src="libchart/exporting.js"></script>
+    <script src="libchart/accessibility.js"></script>
+    <link rel="stylesheet" href="index.css">
+    <title>das Archiv</title>
+</head>
+
+<body>
+    <div id="dataset-form">
+        <select id="dataset-exchange" name="gieldy">
+            <option value="binance">Binance</option>
+            <option value="olx">OLX</option>
+        </select>
+        <input id="dataset-pair" type="text" value="BTC-USDT" />
+        <input id="dataset-date" type="date" value="2022-09-13" min="2019-12-31" max="2018-12-31" />
+        <input id="dataset-submit" type="button" value="essa" />
+    </div>
+    <div id="chart"></div>
+    <script src="index.js"></script>
+</body>
+
+</html>
