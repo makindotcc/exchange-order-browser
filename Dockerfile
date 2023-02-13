@@ -15,7 +15,7 @@ COPY frontend/ frontend/
 
 FROM alpine as runtime
 
-COPY --from=builder /target/x86_64-unknown-linux-musl/release/exchange-archive ./
+COPY --from=builder /target/x86_64-unknown-linux-musl/release/exchange-order-browser ./
 COPY --from=builder /frontend /frontend/
 
 CMD ["./exchange-archive"]
