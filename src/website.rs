@@ -6,6 +6,7 @@ use crate::exchange::trade_reader::{
 use actix_files::Files;
 use actix_web::dev::ServiceRequest;
 use actix_web::http::StatusCode;
+use actix_web::middleware::Condition;
 use actix_web::{get, middleware, web, App, HttpResponse, HttpServer, ResponseError};
 use actix_web_httpauth::extractors::basic::BasicAuth;
 use actix_web_httpauth::extractors::{basic, AuthenticationError};
@@ -24,40 +25,63 @@ use tokio::time::sleep;
 use tokio_util::codec::BytesCodec;
 use tokio_util::codec::FramedRead;
 
+#[derive(Clone)]
+pub struct Credentials {
+    pub user: String,
+    pub password: String,
+}
+
 async fn login(
     req: ServiceRequest,
-    credentials: BasicAuth,
+    req_credentials: BasicAuth,
 ) -> Result<ServiceRequest, (actix_web::Error, ServiceRequest)> {
-    if credentials.user_id() == "essa" && credentials.password() == Some("21essa15") {
-        Ok(req)
-    } else {
-        info!(
-            "{} loguje sie ! zlymi pasami: '{}'{}",
-            req.connection_info().peer_addr().unwrap_or("-"),
-            credentials.user_id(),
-            credentials
-                .password()
-                .map(|pass| format!(":'{}'", pass))
-                .unwrap_or_default(),
-        );
-        sleep(Duration::from_secs(1)).await;
-        let config = req.app_data::<basic::Config>().cloned().unwrap_or_default();
-        Err((AuthenticationError::from(config).into(), req))
+    let server_credentials: &Option<Credentials> =
+        req.app_data().expect("Missing credentials data!");
+    match server_credentials {
+        None => Ok(req),
+        Some(server_credentials)
+            if req_credentials.user_id() == server_credentials.user
+                && req_credentials.password() == Some(&server_credentials.password) =>
+        {
+            Ok(req)
+        }
+        Some(_) => {
+            info!(
+                "{} loguje sie ! zlymi pasami: '{}'{}",
+                req.connection_info().peer_addr().unwrap_or("-"),
+                req_credentials.user_id(),
+                req_credentials
+                    .password()
+                    .map(|pass| format!(":'{}'", pass))
+                    .unwrap_or_default(),
+            );
+            sleep(Duration::from_secs(1)).await;
+            let config = req.app_data::<basic::Config>().cloned().unwrap_or_default();
+            Err((AuthenticationError::from(config).into(), req))
+        }
     }
 }
 
-pub async fn start() -> std::io::Result<()> {
-    let auth = HttpAuthentication::basic(login);
+pub async fn start(server_credentials: Option<Credentials>) -> std::io::Result<()> {
     HttpServer::new(move || {
         let http_client = awc::Client::new();
         App::new()
+            .configure(|config| {
+                if let Some(server_credentials) = server_credentials.clone() {
+                    config.app_data(server_credentials);
+                }
+            })
+            .app_data(server_credentials.clone())
             .service(Files::new("/.well-known/", "./frontend/.well-known/").use_hidden_files())
             .service(
                 web::scope("")
                     .wrap(
                         middleware::DefaultHeaders::new().add(("Access-Control-Allow-Origin", "*")),
                     )
-                    .wrap(auth.clone())
+                    .wrap(Condition::new(
+                        server_credentials.is_some(),
+                        HttpAuthentication::basic(login),
+                    ))
                     .service(view_detailed_dataset)
                     .service(Files::new("/", "./frontend").index_file("index.html"))
                     .app_data(web::Data::new(http_client)),
@@ -122,8 +146,7 @@ async fn view_detailed_dataset(
     path: web::Path<(String, String, String)>,
 ) -> actix_web::Result<HttpResponse> {
     let (exchange, raw_coin_pair, raw_date) = path.into_inner();
-    let date = NaiveDate::parse_from_str(&raw_date, "%Y-%m-%d")
-        .map_err(DatasetError::ParseDate)?;
+    let date = NaiveDate::parse_from_str(&raw_date, "%Y-%m-%d").map_err(DatasetError::ParseDate)?;
     let coin_pair: TradePair = raw_coin_pair
         .parse()
         .map_err(|_| DatasetError::ParseCoinPair)?;

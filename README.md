@@ -9,7 +9,7 @@ without having to pay $9999999.
 - unzipping, parsing and streaming response to your browser on the fly - fast, low memory usage etc. 
 from my benchmarks - download speed is a bottleneck here
 - awfully coded frontend
-- protected against bots scanning internet using hardcoded login:password (``essa:21essa15``) into source code
+- optional website authentication. can be configured using environment variables: `AUTH_USER` and `AUTH_PASSWORD`.
 
 ## Available installation options:
 
