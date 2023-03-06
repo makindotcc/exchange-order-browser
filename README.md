@@ -11,9 +11,9 @@ from my benchmarks - download speed is a bottleneck here
 - awfully coded frontend
 - protected against bots scanning internet using hardcoded login:password (``essa:21essa15``) into source code
 
-## Installation
+## Available installation options:
 
-### Without bloat (docker):
+### A) Without bloat (docker):
 ```
 $ git clone https://github.com/makindotcc/exchange-order-browser
 $ cd exchange-order-browser
@@ -21,12 +21,21 @@ $ cargo run --release
 ```
 - visit [http://essa:21essa15@127.0.0.1:2137/](http://essa:21essa15@127.0.0.1:2137/)
 
-### With deprecated bloat (docker):
+### B) With docker using prebuilt docker container:
+Prebuilt docker container from [dockerhub](https://hub.docker.com/repository/docker/wmknc/exchange-order-browser/general)
 ```
 $ git clone https://github.com/makindotcc/exchange-order-browser
 $ cd exchange-order-browser 
+$ docker build --tag exchange-order-browser .
+$ docker run --detach exchange-order-browser
 ```
-- start container using provided Dockerfile somehow todo: migrate to Nix
+- visit [http://essa:21essa15@127.0.0.1:2137/](http://essa:21essa15@127.0.0.1:2137/)
+
+### C) Build docker container yourself:
+```
+$ docker pull wmknc/exchange-order-browser
+$ docker run --detach wmknc/exchange-order-browser
+```
 - visit [http://essa:21essa15@127.0.0.1:2137/](http://essa:21essa15@127.0.0.1:2137/)
 
 ![Exchange order browser website preview](preview.png)

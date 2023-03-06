@@ -18,5 +18,5 @@ FROM alpine as runtime
 COPY --from=builder /target/x86_64-unknown-linux-musl/release/exchange-order-browser ./
 COPY --from=builder /frontend /frontend/
 
-CMD ["./exchange-archive"]
+CMD ["./exchange-order-browser"]
 EXPOSE 2137
