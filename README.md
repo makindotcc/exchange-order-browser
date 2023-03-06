@@ -11,6 +11,9 @@ from my benchmarks - download speed is a bottleneck here
 - awfully coded frontend
 - optional website authentication. can be configured using environment variables: `AUTH_USER` and `AUTH_PASSWORD`.
 
+## Preview
+![Exchange order browser website preview](preview.png)
+
 ## Available installation options:
 
 ### A) Without bloat (docker):
@@ -19,23 +22,21 @@ $ git clone https://github.com/makindotcc/exchange-order-browser
 $ cd exchange-order-browser
 $ cargo run --release
 ```
-- visit [http://essa:21essa15@127.0.0.1:2137/](http://essa:21essa15@127.0.0.1:2137/)
+- visit [http://127.0.0.1:2137/](http://127.0.0.1:2137/)
 
 ### B) With docker using prebuilt docker container:
 Prebuilt docker container from [dockerhub](https://hub.docker.com/repository/docker/wmknc/exchange-order-browser/general)
+```
+$ docker pull wmknc/exchange-order-browser
+$ docker run --detach wmknc/exchange-order-browser
+```
+- visit [http://127.0.0.1:2137/](http://127.0.0.1:2137/)
+
+### C) Build docker container yourself:
 ```
 $ git clone https://github.com/makindotcc/exchange-order-browser
 $ cd exchange-order-browser 
 $ docker build --tag exchange-order-browser .
 $ docker run --detach exchange-order-browser
 ```
-- visit [http://essa:21essa15@127.0.0.1:2137/](http://essa:21essa15@127.0.0.1:2137/)
-
-### C) Build docker container yourself:
-```
-$ docker pull wmknc/exchange-order-browser
-$ docker run --detach wmknc/exchange-order-browser
-```
-- visit [http://essa:21essa15@127.0.0.1:2137/](http://essa:21essa15@127.0.0.1:2137/)
-
-![Exchange order browser website preview](preview.png)
+- visit [http://127.0.0.1:2137/](http://127.0.0.1:2137/)
